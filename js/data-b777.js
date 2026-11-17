@@ -1,0 +1,63 @@
+/* ===================== BOEING 777: panel + flujos (v7) ===================== */
+(()=>{const S=PX.S,offw=PX.offw,bar=PX.bar,D={ON:[['',''],['','d']],OFF:[['',''],['OFF','w']]};
+PP.panels.b777={name:'Boeing 777',quiz:'#/q/b777/m4',ecamStart:'<span class="wh">COLD & DARK · sin energía</span>',
+disclaimer:'Panel 777 simplificado y dibujado para estudiar en simulador (inspirado en la lógica general del avión). No es un procedimiento real (FCOM/QRH).',
+sections:[
+{id:'elec',name:'Overhead · ELECTRICAL',ctls:[pb('bat','BATTERY','OFF',offw,'Batería principal.'),pb('apugen','APU GEN','OFF',offw,'Generador del APU.'),pb('pext','PRIMARY EXT PWR','AVAIL',S_AVAIL,'Corriente de tierra principal.'),pb('sext','SECONDARY EXT PWR','OFF',S_AVAIL,'Corriente de tierra secundaria (no conectada en el ejemplo).'),sel('apu','APU',['OFF','ON','START'],'OFF','START vuelve solo a ON.')]},
+{id:'adiru',name:'Overhead · ADIRU',ctls:[pb('adiru','ADIRU','OFF',offw,'Unidad inercial y de datos de aire (un solo interruptor en el 777).')]},
+{id:'hyd',name:'Overhead · HYDRAULIC',ctls:[pb('lpri','L ENG PRIMARY','ON',D,'Bomba de motor izquierdo (normal ON).'),pb('c1','C1 ELEC PRIMARY','OFF',offw,'Bomba eléctrica C1.'),pb('c2','C2 ELEC PRIMARY','OFF',offw,'Bomba eléctrica C2.'),pb('rpri','R ENG PRIMARY','ON',D,'Bomba de motor derecho.'),
+ sel('ldem','L DEMAND',['OFF','AUTO','ON'],'OFF','Bomba de demanda izquierda.'),sel('c1dem','C1 DEMAND',['OFF','AUTO','ON'],'OFF','Bomba de demanda C1.'),sel('c2dem','C2 DEMAND',['OFF','AUTO','ON'],'OFF','Bomba de demanda C2.'),sel('rdem','R DEMAND',['OFF','AUTO','ON'],'OFF','Bomba de demanda derecha.')]},
+{id:'fuel',name:'Overhead · FUEL',ctls:[pb('lfwd','L FWD','OFF',offw,'Bomba delantera izquierda.'),pb('laft','L AFT','OFF',offw,'Bomba trasera izquierda.'),pb('ctrl','CTR L','OFF',{OFF:[['',''],['','']],ON:[['',''],['','d']]},'Central izquierda (solo con combustible en el central).'),pb('ctrr','CTR R','OFF',{OFF:[['',''],['','']],ON:[['',''],['','d']]},'Central derecha.'),pb('rfwd','R FWD','OFF',offw,'Bomba delantera derecha.'),pb('raft','R AFT','OFF',offw,'Bomba trasera derecha.')]},
+{id:'air',name:'Overhead · WINDOW HEAT, AIR, ANTI-ICE',ctls:[pb('wh1','WINDOW HEAT L SIDE','OFF',offw,'Ventana lateral izquierda.'),pb('wh2','L FWD','OFF',offw,'Parabrisas izquierdo.'),pb('wh3','R FWD','OFF',offw,'Parabrisas derecho.'),pb('wh4','R SIDE','OFF',offw,'Ventana lateral derecha.'),
+ sel('apub','APU BLEED',['OFF','AUTO'],'AUTO','Aire del APU (el 777 usa aire sangrado).'),pb('packl','PACK L','ON',D,'Pack izquierdo (normal).'),pb('packr','PACK R','ON',D,'Pack derecho.'),sel('wai','WING ANTI-ICE',['AUTO','OFF','ON'],'AUTO','Anti-hielo de alas (aire sangrado).'),sel('eai','ENG ANTI-ICE',['AUTO','OFF','ON'],'AUTO','Anti-hielo de motores.')]},
+{id:'lt',name:'Overhead · LIGHTS y SIGNS',ctls:[tg('nav','NAV',['OFF','ON'],'OFF','Navegación.'),tg('beacon','BEACON',['OFF','ON'],'OFF','Anticolisión.'),tg('strobe','STROBE',['OFF','ON'],'OFF','Estroboscópicas.'),tg('land','LANDING',['OFF','ON'],'OFF','Aterrizaje.'),tg('taxi','TAXI',['OFF','ON'],'OFF','Rodaje.'),tg('rwyto','RWY TURNOFF',['OFF','ON'],'OFF','Laterales.'),sel('belts','SEATBELTS',['OFF','AUTO','ON'],'OFF','Cinturones.')]},
+{id:'mcp',name:'Glareshield · MCP y EFIS',dark:true,ctls:[disp('baro','BARO','29.92 IN','Altímetro.'),tg('fd','F/D',['OFF','ON'],'OFF','Director de vuelo.'),tg('at','A/T ARM',['OFF','ARM'],'OFF','Autothrottle.'),disp('ias','IAS','200','Velocidad.'),disp('hdg','HDG','000','Rumbo.'),disp('alt','ALT','10000','Altitud.'),
+ pb('lnav','LNAV','OFF',{OFF:[['',''],['','']],ARM:[['',''],['▬','g']]},'Navegación lateral.'),pb('vnav','VNAV','OFF',{OFF:[['',''],['','']],ARM:[['',''],['▬','g']]},'Navegación vertical.'),pb('cmd','A/P','OFF',bar,'Piloto automático.'),pb('app','APP','OFF',bar,'Aproximación.')]},
+{id:'cdu',name:'Pedestal · CDU (FMC)',cdu:true,tag:'CDU L',ctls:[...LSK('k'),key('kINIT','INIT REF'),key('kRTE','RTE'),key('kDEP','DEP ARR'),key('kEXEC','EXEC'),key('kVNAV','VNAV'),key('kNEXT','NEXT PG'),key('kLEGS','LEGS'),key('kPROG','PROG')]},
+{id:'ped',name:'Arranque y pedestal',ctls:[disp('xpdr','XPDR','2000 STBY','Transpondedor.'),tg('auto','AUTOSTART',['OFF','ON'],'ON','Arranque automático (normal ON).'),sel('stl','ENG START L',['NORM','START'],'NORM','Selector de arranque izquierdo.'),sel('str','ENG START R',['NORM','START'],'NORM','Selector de arranque derecho.'),
+ lev('fcl','FUEL CONTROL L',['CUTOFF','RUN'],'CUTOFF','Combustible del motor izquierdo.','lv-white'),lev('fcr','FUEL CONTROL R',['CUTOFF','RUN'],'CUTOFF','Combustible del motor derecho.','lv-white'),tg('pbrk','PARK BRAKE',['OFF','SET'],'OFF','Freno de aparcamiento.'),sel('flaps','FLAPS',['UP','1','5','15','20','25','30'],'UP','Flaps.')]},
+{id:'thr',name:'Pedestal · empuje, tren y frenos',ctls:[sel('thr','THRUST LEVERS',['IDLE','40% N1','TO/GA'],'IDLE','Palancas de empuje.'),lev('gear','GEAR',['DOWN','UP'],'DOWN','Tren.'),sel('abrk','AUTOBRAKE',['OFF','RTO','1','2','3','4','MAX'],'OFF','Frenado automático.'),lev('spdbrk','SPEEDBRAKE',['DOWN','ARMED'],'DOWN','Speedbrake.'),sel('rev','REVERSE',['STOW','IDLE','MAX'],'STOW','Reversas.')]}],
+flow:[
+S('Preparación',null,null,'Cabina oscura del 777','Vuelo de ejemplo LEMD → LEBL saliendo por la 36L (configuración norte).','Si conoces el 787 de esta app, el 777 te resultará familiar; la gran diferencia es que el 777 usa aire sangrado.'),
+S('Preparación','pbrk','SET','PARK BRAKE: SET','',''),
+S('Energía','bat','ON','BATTERY: ON','Se apaga la luz OFF.',''),
+S('Energía','pext','ON','PRIMARY EXT PWR: ON','Con AVAIL, conecta la corriente de tierra.','',{m:'EXT PWR alimentando barras AC'}),
+S('Energía','nav','ON','NAV: ON','',''),
+S('ADIRU','adiru','ON','ADIRU: ON','Un solo interruptor alinea el sistema inercial.','En el 777 hay una ADIRU (con redundancia interna) y una unidad de reserva (SAARU). No muevas el avión durante la alineación.'),
+S('APU','apu','START','APU: START','Gira a START y suelta: vuelve a ON.','',{later:[[['apu','ON']],'APU RUNNING','Arrancando APU…']}),
+S('APU','apugen','ON','APU GEN: ON','El APU alimenta el avión.',''),
+S('APU',null,null,'APU BLEED en AUTO','Comprueba APU BLEED en AUTO.','El 777 usa el aire del APU para los packs y para arrancar los motores.'),
+S('Hidráulico','c1','ON','C1 ELEC PRIMARY: ON','',''),S('Hidráulico','c2','ON','C2 ELEC PRIMARY: ON','Sistema central presurizado.',''),
+...['lfwd','laft','rfwd','raft'].map((f,k)=>S('Combustible',f,'ON',['L FWD','L AFT','R FWD','R AFT'][k]+': ON',k?'':'Bombas de ala.',k?'':'Las centrales solo con combustible en el tanque central.')),
+...['wh1','wh2','wh3','wh4'].map((w,k)=>S('Sistemas',w,'ON',['WINDOW HEAT L SIDE','L FWD','R FWD','R SIDE'][k]+': ON',k?'':'Los cuatro WINDOW HEAT.',k?'':'Cristales calientes: sin empañado y más resistentes.')),
+S('Cabina','belts','ON','SEATBELTS: ON','',''),
+S('FMC · IDENT','kINIT',null,'INIT REF → IDENT','Comprueba modelo y base de datos.','',{scr:cdu('IDENT',[[[' MODEL','ENGINES '],['{w}777-300ER{/}','{w}GE90-115B{/}']],[[' NAV DATA','ACTIVE '],['{w}EJEMPLO{/}','{w}VIGENTE{/}']],[['',''],['','']],[['',''],['','']],[['',''],['','']],[['',''],['{w}<INDEX{/}','{w}POS INIT>{/}']]],'')}),
+S('FMC · POS INIT','kR6',null,'POS INIT: REF AIRPORT LEMD','Pulsa R6 y pon LEMD como aeropuerto de referencia.',''),
+S('FMC · RTE','kRTE',null,'RTE: LEMD → LEBL, RWY 36L','Origen, destino y pista.',''),
+S('FMC · RTE','kNEXT',null,'VIA / TO','Aerovía hasta MARTA (ejemplo).',''),
+S('FMC · RTE','kR6',null,'ACTIVATE','',''),S('FMC · RTE','kEXEC',null,'EXEC','',''),
+S('FMC · DEP ARR','kDEP',null,'DEP ARR: TALAR1N 36L','SID ficticia de ejemplo.',''),S('FMC · DEP ARR','kEXEC',null,'EXEC','',''),
+S('FMC · PERF','kINIT',null,'PERF INIT','ZFW 210,0 t, reservas 6,0 t, CI 50, CRZ ALT FL300 (ejemplo, en un toque).','',{scr:cdu('PERF INIT',[[[' GR WT','CRZ ALT'],['{w}240.0{/}','{w}FL300{/}']],[[' FUEL',''],['{w}30.0{/}','']],[[' ZFW',''],['{w}210.0{/}','']],[[' RESERVES',''],['{w}6.0{/}','']],[[' COST INDEX',''],['{w}50{/}','']],[['',''],['{w}<INDEX{/}','{w}THRUST LIM>{/}']]],'')}),
+S('FMC · PERF','kEXEC',null,'EXEC','',''),
+S('FMC · THRUST LIM','kR6',null,'THRUST LIM','',''),S('FMC · THRUST LIM','kL1',null,'SEL 40 °C y TO 1','Temperatura supuesta y derate de ejemplo.',''),
+S('FMC · TAKEOFF','kR6',null,'TAKEOFF REF: flaps 15 y CG','Flaps 15 y CG de ejemplo.','',{scr:cdu('TAKEOFF REF',[[[' FLAPS','V1 '],['{w}15°{/}','{w}150{/}']],[[' THRUST','VR '],['{w}TO 1{/}','{w}156{/}']],[[' CG','V2 '],['{w}28.0%{/}','{w}162{/}']],[['RWY/POS',''],['{w}RW36L{/}','']],[['',''],['','']],[['',''],['{w}<INDEX{/}','']]],'')}),
+S('FMC · TAKEOFF','kR1',null,'Aceptar V1','',''),S('FMC · TAKEOFF','kR2',null,'Aceptar VR','',''),S('FMC · TAKEOFF','kR3',null,'Aceptar V2','',''),S('FMC · TAKEOFF','kEXEC',null,'EXEC','Preflight del FMC completo.',''),
+S('MCP','baro','1020 HPA','QNH 1020 (ejemplo)','',''),S('MCP','fd','ON','F/D: ON','',''),S('MCP','at','ARM','A/T ARM','',''),S('MCP','ias','162','IAS: V2 (162)','',''),S('MCP','alt','4000','ALT: 4000 (ejemplo)','',''),S('MCP','lnav','ARM','LNAV armado','',''),S('MCP','vnav','ARM','VNAV armado','',''),
+S('Antes del arranque','xpdr','4721 XPNDR','Transpondedor 4721','',''),S('Antes del arranque',null,null,'Puertas y pushback','',''),
+...['ldem','c1dem','c2dem','rdem'].map((d,k)=>S('Antes del arranque',d,'AUTO',['L','C1','C2','R'][k]+' DEMAND: AUTO',k?'':'Bombas de demanda en AUTO.','')),
+S('Antes del arranque','beacon','ON','BEACON: ON','',''),
+S('Arranque','str','START','ENG START R: START','Tira del selector (autostart ON).',''),
+S('Arranque','fcr','RUN','FUEL CONTROL R: RUN','Con autostart, a RUN de inmediato: el sistema mete combustible e ignición en el momento justo.','',{later:[[['str','NORM']],'R ENG estabilizado','Arrancando motor derecho…']}),
+S('Arranque','stl','START','ENG START L: START','',''),
+S('Arranque','fcl','RUN','FUEL CONTROL L: RUN','','',{later:[[['stl','NORM']],'L + R ENG estabilizados','Arrancando motor izquierdo…']}),
+S('Después del arranque','apu','OFF','APU: OFF','',''),S('Después del arranque','flaps','15','FLAPS: 15','',''),
+S('Rodaje','taxi','ON','TAXI: ON','',''),S('Rodaje','pbrk','OFF','PARK BRAKE: OFF','','',{m:'¡A rodar hacia la 36L!'})]};
+const P=PP.panels.b777;
+const T=PX.boeingFlow({id:'b777',crz:'300',abrk:'abrk',strobe:['strobe','ON','OFF'],land:'land',rwyto:'rwyto',taxi:'taxi',thr:'thr',gear:'gear',ap:'cmd',app:'app',spd:'spdbrk',rev:'rev',apAlt:'200',flapsTO:'15',flapsRet:['5','1','UP'],appSeq:['1','5','GEAR','20','30'],vref:'145',gw:'230.0',
+ cut:['fcl','fcr'],beacon:'beacon',pumps:['lfwd','laft','rfwd','raft'],apuGen:[],
+ shut:[S('Asegurar el avión','wh1','OFF','WINDOW HEAT: OFF','','',{fx:[['wh2','OFF'],['wh3','OFF'],['wh4','OFF']]}),S('Asegurar el avión','c1','OFF','Bombas hidráulicas eléctricas: OFF','','',{fx:[['c2','OFF'],['ldem','OFF'],['c1dem','OFF'],['c2dem','OFF'],['rdem','OFF']]})],
+ ext:['pext','AVAIL'],irs:['adiru'],nav:['nav','OFF'],bat:'bat'});
+T.forEach(s=>{if(s.c==='adiru')s.t='ADIRU: OFF';});
+P.flows=[{id:'pre',name:'De cold & dark a listo para rodar',steps:P.flow,done:'¡Listo para rodar!',doneTxt:'Sigue con el flujo 2.'},{id:'vuelo',name:'Del rodaje al apagado (vuelo completo)',steps:T,done:'¡Vuelo completado!',doneTxt:'Vuelo LEMD→LEBL completo (simplificado).'}];
+P.snd=v=>[v.bat==='ON'&&'hum',v.pext==='ON'&&'gpu',...['lfwd','laft','rfwd','raft'].map(k=>v[k]==='ON'&&'pump_'+k),v.c1==='ON'&&'pump_c1',v.apu&&v.apu!=='OFF'&&'apu',v.fcl==='RUN'&&'eng_l',v.fcr==='RUN'&&'eng_r'];
+})();

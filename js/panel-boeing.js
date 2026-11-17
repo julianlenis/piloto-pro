@@ -1,5 +1,5 @@
 /* Constructor del flujo 2 (rodaje → apagado) para los Boeing (787, 737, 777) — simplificado y didáctico */
-PX.boeingFlow=o=>{const S=PX.S,arr=o.arr||'LEBL',vref=o.vref||'140';const X=(a)=>a.filter(Boolean);
+PX.boeingFlow=o=>{const crz=o.crz||'240',S=PX.S,arr=o.arr||'LEBL',vref=o.vref||'140';const X=(a)=>a.filter(Boolean);
 const arrPg=cdu(`${arr} ARRIVALS`,[[[' STARS','APPROACHES '],['{w}MARTA2B{/}','{w}ILS24R{/}']],[['',''],['{w}ROSAL1B{/}','{w}ILS24L{/}']],[[' TRANS',''],['','{w}RNAV02{/}']],[['',''],['','']],[['',''],['','']],[['',''],['{w}<INDEX{/}','{w}ROUTE>{/}']]],'');
 const legs=cdu('{o}MOD{/} RTE 1 LEGS',[[['',''],['{m}SOLER{/}','{m}250/7000{/}']],[['',''],['{w}LXX{/}','{w}210/5000{/}']],[['',''],['{w}FI24R{/}','{w}160/3000{/}']],[['',''],['{w}RW24R{/}','{w}  /  54{/}']],[['',''],['','']],[['',''],['{w}<RTE 2 LEGS{/}','{w}RTE DATA>{/}']]],'');
 const apr=cdu('APPROACH REF',[[[' GROSS WT','FLAPS    VREF '],['{w}'+(o.gw||'150.0')+'{/}','{w}20°   '+(+vref+8)+'KT{/}']],[['',''],['','{w}25°   '+(+vref+4)+'KT{/}']],[['',''],['','{w}30°   '+vref+'KT{/}']],[[' ILS24R','FLAP/SPD '],['{w}(ejemplo){/}','{o}--/---{/}']],[['',''],['','']],[['',''],['{w}<INDEX{/}','{w}THRUST LIM>{/}']]],'');
@@ -19,9 +19,9 @@ S('Subida',o.ap,'ON','Piloto automático: CMD','Por encima de '+(o.apAlt||'200')
 S('Subida',o.taxi,'OFF','Luz de rodaje: OFF','Apágala (algunas compañías lo hacen antes).',''),
 o.rwyto&&S('Subida',o.rwyto,'OFF','RWY TURNOFF: OFF','',''),
 S('Subida','baro','STD','Altímetro: STD','Al pasar la altitud de transición, pulsa STD.','Por encima se vuela en niveles de vuelo.'),
-S('Subida','alt','24000','MCP ALT: 24000','Autorizado a FL240: pon 24000 en el MCP.','VNAV sube hasta la altitud del MCP o la del FMC, la que llegue antes.'),
+S('Subida','alt',crz+'00','MCP ALT: '+crz+'00','Autorizado a FL'+crz+': pon '+crz+'00 en el MCP.','VNAV sube hasta la altitud del MCP o la del FMC, la que llegue antes.'),
 S('Subida',o.land,'OFF','Luces de aterrizaje: OFF a FL100','Por encima de 10.000 ft se apagan.',''),
-S('Crucero',null,null,'Crucero FL240','Vigila combustible (PROG) y prepara la llegada con tiempo.','En un vuelo corto el crucero apenas dura.',{m:'FMA: <span class="gr">SPD | LNAV | VNAV PTH</span>'}),
+S('Crucero',null,null,'Crucero FL'+crz,'Vigila combustible (PROG) y prepara la llegada con tiempo.','En un vuelo corto el crucero apenas dura.',{m:'FMA: <span class="gr">SPD | LNAV | VNAV PTH</span>'}),
 S('Llegada · FMC','kDEP',null,'DEP ARR → ARR '+arr,'Pulsa DEP ARR y elige <ARR del destino. Datos de ejemplo.','La llegada se programa tras escuchar el ATIS del destino.',{scr:arrPg}),
 S('Llegada · FMC','kR1',null,'Aproximación: ILS24R','Pulsa R1 (ILS24R).','Primero la aproximación, después la STAR que encaja con ella.'),
 S('Llegada · FMC','kL1',null,'STAR: MARTA2B','Pulsa L1 (MARTA2B, ficticia).','Comprueba que no quede una discontinuidad con la ruta.'),
