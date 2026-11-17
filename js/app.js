@@ -50,8 +50,12 @@ toolsGrid(){return `<div class="grid">
  <a class="card" href="#/t/metar"><div class="ic">🌦️</div><b>METAR / TAF</b><small>Decodificador interactivo y ejercicios</small></a>
  <a class="card" href="#/t/wb"><div class="ic">⚖️</div><b>Peso y centrado</b><small>Calculadora didáctica</small></a>
  <a class="card" href="#/t/viento"><div class="ic">🧭</div><b>Viento cruzado</b><small>Componentes en pista</small></a>
- <a class="card" href="#/l/escuela/m5/l1"><div class="ic">🗺️</div><b>Cartas</b><small>SID, STAR, IAC, aeródromo, ruta</small></a>
- <a class="card" href="#/l/escuela/m4/l1"><div class="ic">📢</div><b>NOTAM</b><small>Cómo leerlos</small></a></div>`;},
+ <a class="card" href="#/t/notam"><div class="ic">📢</div><b>NOTAM</b><small>Decodificador y ejercicios</small></a>
+ <a class="card" href="#/t/ofp"><div class="ic">🧾</div><b>Generador de OFP</b><small>LEVC→LEBL: ETO, combustible, T/D</small></a>
+ <a class="card" href="#/t/fuel"><div class="ic">⛽</div><b>Combustible</b><small>Taxi, trip, contingencia, reservas</small></a>
+ <a class="card" href="#/t/navq"><div class="ic">⏱️</div><b>ETA y T/D</b><small>Ejercicios de cálculo</small></a>
+ <a class="card" href="#/t/cartasq"><div class="ic">🗺️</div><b>Leer cartas</b><small>Mínimos, MSA, espera, LEMD</small></a>
+ <a class="card" href="#/l/escuela/m3/l4"><div class="ic">🌬️</div><b>Viento y SIGWX</b><small>Barbas y símbolos</small></a></div>`;},
 escuela(){V.course('escuela');},
 aviones(){app.innerHTML=`<h1>✈️ Aviones</h1><p class="mu">Catálogo de aviones. Los cursos completos incluyen sistemas, programación del FMS, panel interactivo y examen final. Las introducciones son una primera toma de contacto.</p>
  <div class="list">${PP.courses.filter(c=>c.level!=='school').map(c=>{const pc=courseProg(c);return `<a class="row" href="#/c/${c.id}"><span class="n" style="font-size:20px">${c.icon}</span><div><b>${c.title}</b> ${levelBadge(c)}<small>${c.sub}</small><div class="bar"><i style="width:${pc}%"></i></div></div><span class="go">›</span></a>`;}).join('')}</div>
@@ -84,8 +88,7 @@ exam(cid){const c=C(cid);if(!c||!c.final)return V.home();const pool=c.modules.fl
  $('#go').onclick=()=>Quiz.run(app,shuffle(pool).slice(0,c.final.n),{title:`Examen final · ${c.title}`,pass:c.final.pass,back:`#/c/${cid}`,onScore:pc=>{const p=ST.get();p.f[cid]=Math.max(pc,p.f[cid]||0);ST.set(p);}});},
 panel(id){const P=PP.panels[id];if(!P)return V.home();localStorage.setItem('pp_last',location.hash);
  app.innerHTML=`<h1>🎛️ Panel ${P.name}</h1><p class="mu sm">Sigue las instrucciones: el control que toca parpadea en amarillo. Tócalo y mira cómo cambia.</p><div id="pnl"></div>`;Panel.run(id,$('#pnl'));},
-tool(t){const r=app;if(t==='metar')Tools.metar(r);else if(t==='alfabeto')Tools.alfa(r);else if(t==='wb')Tools.wb(r);else if(t==='viento')Tools.viento(r);
- else if(t==='metarq'){Quiz.run(r,Tools.metarQs(),{title:'Ejercicios METAR',back:'#/t/metar'});}else V.home();}
+tool(t){const r=app;if(QZ[t]){const z=QZ[t];Quiz.run(r,Tools[z[0]](),{title:z[1],back:z[2]});}else if(t==='alfabeto')Tools.alfa(r);else if(typeof Tools[t]==='function'&&!/Qs$/.test(t))Tools[t](r);else V.home();}
 };
 function route(){const h=location.hash.replace(/^#\/?/,'').split('/');scrollTo(0,0);Voice.stop();Snd.stopAll();if(window.Video)Video.g++;document.querySelectorAll('.sheet').forEach(x=>x.remove());
  const tab={'':'home',escuela:'escuela',c:h[1]==='escuela'?'escuela':'aviones',l:h[1]==='escuela'?'escuela':'aviones',q:'aviones',x:'aviones',p:'aviones',aviones:'aviones',herramientas:'herramientas',t:'herramientas',videos:'herramientas',v:'herramientas'}[h[0]]||'home';

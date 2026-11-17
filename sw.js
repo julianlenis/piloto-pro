@@ -1,4 +1,4 @@
-const C='pp-v4',F=['./','index.html','css/app.css','js/data-general.js','js/data-a320.js','js/data-b787.js','js/data-b737.js','js/data-intro.js','js/tools.js','js/fx.js','js/panel.js','js/videos.js','js/app.js','manifest.json','icon-192.png','icon-512.png'];
+const C='pp-v5',F=['./','index.html','css/app.css','js/data-general.js','js/svg2.js','js/escuela2.js','js/escuela-q.js','js/data-a320.js','js/data-b787.js','js/data-b737.js','js/data-intro.js','js/tools.js','js/tools2.js','js/fx.js','js/panel.js','js/videos.js','js/app.js','manifest.json','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(F.map(u=>new Request(u,{cache:'reload'})))));});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{const q=e.request;if(q.method!=='GET'||new URL(q.url).origin!==location.origin)return;
