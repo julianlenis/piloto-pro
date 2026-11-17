@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Piloto Pro by Julián Lenis</title>
+<meta name="description" content="Aprende desde cero a volar el Airbus A320, el Boeing 787 y más en simulador · Piloto Pro by Julián Lenis">
+<meta name="theme-color" content="#0b1424">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Piloto Pro">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header id="top">
+  <button id="bBack" class="hbtn" aria-label="Atrás">‹</button>
+  <div class="brand" onclick="location.hash='#/'"><span class="logo">✈</span><div><b>Piloto Pro</b><small>by Julián Lenis</small></div></div>
+  <div id="hProg" class="hprog"></div>
+</header>
+<main id="app"></main>
+<nav id="tabs">
+  <a href="#/" data-t="home"><span>🏠</span>Inicio</a>
+  <a href="#/escuela" data-t="escuela"><span>📚</span>Escuela</a>
+  <a href="#/aviones" data-t="aviones"><span>✈️</span>Aviones</a>
+  <a href="#/herramientas" data-t="herramientas"><span>🧰</span>Herramientas</a>
+</nav>
+<script src="js/data-general.js"></script>
+<script src="js/data-a320.js"></script>
+<script src="js/data-b787.js"></script>
+<script src="js/data-b737.js"></script>
+<script src="js/data-intro.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/panel.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
