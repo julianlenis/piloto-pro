@@ -10,7 +10,7 @@ function decodeWx(raw){
  const toks=raw.trim().toUpperCase().replace(/=$/,'').split(/\s+/).filter(Boolean);const out=[];let st=0,isTaf=false,prev='',rmk=false;
  const dd=(x)=>`día ${+x.slice(0,2)} a las ${x.slice(2,4)}:${x.length>=6?x.slice(4,6):'00'} UTC`;
  toks.forEach((t,i)=>{let e=null;
-  if(rmk){e='Observaciones (RMK): información adicional nacional.';}
+  if(rmk&&!/^(AO[12]|SLP\d{3}|T[01]\d{7})$/.test(t)){e='Observaciones (RMK): información adicional nacional.';}
   else if(t==='METAR'||t==='SPECI'){e=t==='METAR'?'Tipo de informe: METAR, observación ordinaria del tiempo actual.':'SPECI: informe especial por un cambio significativo.';}
   else if(t==='TAF'){isTaf=true;e='TAF: pronóstico de aeródromo.';}
   else if(t==='AMD')e='AMD: TAF enmendado (corregido con nueva información).';
@@ -40,6 +40,21 @@ function decodeWx(raw){
   else if(/^PROB(30|40)$/.test(t))e=`Probabilidad del ${t.slice(4)} %.`;
   else if(/^FM\d{6}$/.test(t))e=`FM (from): a partir del ${dd(t.slice(2))}, cambio rápido a las condiciones siguientes.`;
   else if(/^T[XN]M?\d{2}\/\d{4}Z$/.test(t)){const m=t.match(/^T([XN])(M?\d{2})\/(\d{4})Z$/);e=`Temperatura ${m[1]==='X'?'máxima':'mínima'} prevista ${tmp(m[2])} °C el día ${+m[3].slice(0,2)} a las ${m[3].slice(2)} UTC.`;}
+  else if(/^R\d{2}[LCR]?\/CLRD\d{2}$/.test(t))e=`Estado de pista ${t.slice(1,t.indexOf('/'))}: contaminación eliminada (CLRD), coeficiente de frenado indicado al final.`;
+  else if(/^R\d{2}[LCR]?\/[\d\/]{6}$/.test(t)){const rw=t.slice(1,t.indexOf('/')),g=t.slice(t.indexOf('/')+1);const DEP={0:'limpia y seca',1:'húmeda',2:'mojada o con charcos',3:'escarcha',4:'nieve seca',5:'nieve húmeda',6:'nieve fundente (slush)',7:'hielo',8:'nieve compactada',9:'surcos helados','/':'no informado'};const EXT={1:'≤10 %',2:'11–25 %',5:'26–50 %',9:'51–100 %','/':'no informada'};const dp=g.slice(2,4),fr=g.slice(4,6);
+    e=`Estado de la pista ${rw} (formato antiguo, hoy poco usado en Europa tras el formato GRF): ${DEP[g[0]]}, cubre ${EXT[g[1]]||'?'}, espesor ${dp==='//'?'no medible':dp==='00'?'menos de 1 mm':+dp+' mm'}, frenado ${fr==='//'?'no informado':+fr>=91&&+fr<=95?['malo','medio/malo','medio','medio/bueno','bueno'][+fr-91]:fr==='99'?'no fiable':'coeficiente 0.'+fr}.`;}
+  else if(/^R\d{2}[LCR]?$/.test(t)&&prev==='WS')e=`Cizalladura en la pista ${t.slice(1)}.`;
+  else if(t==='ALL'&&prev==='WS')e='En todas…';else if(t==='RWY'&&prev==='ALL')e='…las pistas (WS ALL RWY).';
+  else if(/^(P|M)?\d{1,2}SM$/.test(t)||/^(M)?\d\/\d{1,2}SM$/.test(t))e=`Visibilidad ${t[0]==='P'?'superior a ':t[0]==='M'?'inferior a ':''}${t.replace(/^[PM]/,'').replace('SM','')} millas terrestres (formato EE. UU.).`;
+  else if(/^\d$/.test(t)&&/^\d\/\dSM$/.test(toks[i+1]||''))e=`${t} y… (visibilidad con fracción, formato EE. UU.)`;
+  else if(/^(TL|AT)\d{4}$/.test(t))e=`${t.startsWith('TL')?'Hasta (TL)':'A las (AT)'} ${t.slice(2,4)}:${t.slice(4)} UTC.`;
+  else if(/^FM\d{4}$/.test(t))e=`A partir de las ${t.slice(2,4)}:${t.slice(4)} UTC (tendencia).`;
+  else if(/^(FEW|SCT|BKN|OVC|\/\/\/)(\d{3}|\/\/\/)(CB|TCU|\/\/\/)?$/.test(t))e='Grupo de nubes con datos no disponibles (///) desde una estación automática.';
+  else if(t==='CLR')e='CLR: no se detectan nubes por debajo de 12.000 ft (estación automática, EE. UU.).';
+  else if(/^\/\/\/\/\/\/$/.test(t))e='Grupo no disponible.';
+  else if(rmk&&/^AO[12]$/.test(t))e=`${t}: estación automática ${t==='AO2'?'con':'sin'} sensor de tipo de precipitación.`;
+  else if(rmk&&/^SLP\d{3}$/.test(t)){const v=+t.slice(3)/10;e=`Presión a nivel del mar ${(v<50?1000+v:900+v).toFixed(1)} hPa.`;}
+  else if(rmk&&/^T[01]\d{3}[01]\d{3}$/.test(t)){const a=(t[1]==='1'?-1:1)*+t.slice(2,5)/10,b=(t[5]==='1'?-1:1)*+t.slice(6,9)/10;e=`Temperatura ${a.toFixed(1)} °C y punto de rocío ${b.toFixed(1)} °C (en décimas).`;}
   else if(/^RE[A-Z]{2,6}$/.test(t)){const w=wxText(t.slice(2));e=w?'Tiempo reciente (en la última hora): '+w.toLowerCase():null;}
   else if(t==='WS'){e='WS: cizalladura del viento (wind shear) informada.';}
   else if(t==='RMK'){rmk=true;e='RMK: comienzan las observaciones adicionales.';}
@@ -56,6 +71,8 @@ const WX_EX=[
  {n:'Castellón, CAVOK',s:'METAR LECH 171200Z 12006KT CAVOK 24/12 Q1016 NOSIG='},
  {n:'Palma, tormenta',s:'METAR LEPA 171500Z 18012KT 3000 +TSRA BKN015CB OVC060 21/19 Q1011 RETS='},
  {n:'Madrid, nieve',s:'METAR LEMD 170600Z VRB03KT 2000 -SN BKN008 OVC015 M01/M02 Q1004 NOSIG='},
+ {n:'Madrid, pista contaminada (antiguo)',s:'METAR LEMD 170800Z 34004KT 1500 -SN BR BKN006 M02/M03 Q1012 R36L/590195 WS R18R BECMG TL0930 3000='},
+ {n:'EE. UU. (formato FAA)',s:'METAR KJFK 171451Z 31012G22KT 1 1/2SM -RA BR OVC008 08/07 A2992 RMK AO2 SLP132 T00830072='},
  {n:'TAF Barcelona',s:'TAF LEBL 171100Z 1712/1818 22010KT 9999 FEW025 TX21/1714Z TN12/1806Z BECMG 1716/1718 VRB03KT TEMPO 1800/1806 4000 BR PROB30 1804/1806 BKN008='},
  {n:'TAF Valencia',s:'TAF LEVC 170500Z 1706/1806 VRB04KT CAVOK BECMG 1710/1712 10010KT FM171800 30008KT 9999 SCT040 PROB40 TEMPO 1714/1718 SHRA BKN025CB='}
 ];
