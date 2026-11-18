@@ -36,7 +36,7 @@ home(){const p=ST.get();const last=localStorage.getItem('pp_last');
  <div class="btns">${last?`<a class="btn" href="${last}">▶ Continuar</a>`:`<a class="btn" href="#/c/escuela">▶ Empezar por la Escuela</a>`}<button class="btn sec" id="inst" style="display:none">📲 Instalar app</button></div></div>
  ${Prof.card(true)}
  <h2>🎓 Tu ruta de aprendizaje</h2><div class="list">
- ${[['escuela','1','Escuela de vuelo: fundamentos, radio, meteo, cartas, plan de vuelo'],['a320','2','Airbus A320 completo + panel'],['b787','3','Boeing 787 completo + panel'],['b737','4','Boeing 737 completo + panel'],['a350','5','Airbus A350 completo + panel'],['b777','6','Boeing 777 completo + panel']].map(([id,n,t])=>{const c=C(id),pc=courseProg(c);return `<a class="row" href="#/c/${id}"><span class="n ${pc===100?'done':''}">${pc===100?'✓':n}</span><div><b>${c.title}</b><small>${t}</small><div class="bar"><i style="width:${pc}%"></i></div></div><span class="go">›</span></a>`;}).join('')}</div>
+ ${[['escuela','1','Escuela de vuelo: fundamentos, radio, meteo, cartas, plan de vuelo'],['mcdu','2','MCDU / FMC: programa el ordenador de vuelo con un simulador de teclas'],['a320','3','Airbus A320 completo + panel'],['b787','4','Boeing 787 completo + panel'],['b737','5','Boeing 737 completo + panel'],['a350','6','Airbus A350 completo + panel'],['b777','7','Boeing 777 completo + panel']].map(([id,n,t])=>{const c=C(id),pc=courseProg(c);return `<a class="row" href="#/c/${id}"><span class="n ${pc===100?'done':''}">${pc===100?'✓':n}</span><div><b>${c.title}</b><small>${t}</small><div class="bar"><i style="width:${pc}%"></i></div></div><span class="go">›</span></a>`;}).join('')}</div>
  <h2>🎬 Vídeo-lecciones</h2><div class="grid">${VIDS.slice(0,4).map(v=>`<a class="card" href="#/v/${v.id}"><div class="ic">${v.ic}</div><b>${v.t}</b><small>Animación narrada</small></a>`).join('')}</div><p><a href="#/videos">Ver todas ›</a></p>
  <h2>🎛️ Paneles de cabina interactivos</h2><div class="grid">${Object.keys(PP.panels).map(k=>`<a class="card" href="#/p/${k}"><div class="ic">🎛️</div><b>${PP.panels[k].name}</b><small>Preparación desde cold & dark y vuelo completo hasta el apagado</small></a>`).join('')}</div>
  <h2>🧰 Herramientas rápidas</h2>${V.toolsGrid()}
@@ -80,7 +80,7 @@ lesson(cid,mid,lid){const c=C(cid),m=c&&c.modules.find(x=>x.id===mid),l=m&&m.les
  <div class="lesson">${l.html}</div>
  <div class="btns">${next?`<a class="btn wide" href="#/l/${cid}/${mid}/${next.id}">Siguiente lección: ${next.title} ›</a>`:`<a class="btn wide" href="#/q/${cid}/${mid}">📝 Hacer el test del módulo ›</a>`}</div>
  <div class="lnav">${prev?`<a class="btn sec" href="#/l/${cid}/${prev[0].id}/${prev[1].id}">‹ Lección anterior</a>`:''}<a class="btn sec" href="#/c/${cid}">☰ Índice del curso</a></div>`;
- const rd=()=>Voice.say(l.title+'. '+l.html);$('#lSay').onclick=()=>{SET.get().voice?rd():(SET.set('voice',true),UI.sync(),rd());};$('#lStop').onclick=()=>Voice.stop();rd();},
+ if(typeof MC!=='undefined')MC.mount(app);const rd=()=>typeof MC!=='undefined'&&MC.cur?MC.cur.say():Voice.say(l.title+'. '+l.html);$('#lSay').onclick=()=>{SET.get().voice?rd():(SET.set('voice',true),UI.sync(),rd());};$('#lStop').onclick=()=>Voice.stop();rd();},
 quiz(cid,mid){const c=C(cid),m=c&&c.modules.find(x=>x.id===mid);if(!m)return V.home();
  Quiz.run(app,shuffle(m.quiz),{title:`Test · ${m.title}`,back:`#/c/${cid}`,onScore:pc=>{const p=ST.get();p.q[`${cid}/${mid}`]=Math.max(pc,p.q[`${cid}/${mid}`]||0);ST.set(p);}});},
 exam(cid){const c=C(cid);if(!c||!c.final)return V.home();const pool=c.modules.flatMap(m=>m.quiz);
@@ -91,11 +91,11 @@ panel(id){const P=PP.panels[id];if(!P)return V.home();localStorage.setItem('pp_l
 tool(t){const r=app;if(QZ[t]){const z=QZ[t];Quiz.run(r,Tools[z[0]](),{title:z[1],back:z[2]});}else if(t==='alfabeto')Tools.alfa(r);else if(typeof Tools[t]==='function'&&!/Qs$/.test(t))Tools[t](r);else V.home();}
 };
 function route(){const h=location.hash.replace(/^#\/?/,'').split('/');scrollTo(0,0);Voice.stop();Snd.stopAll();if(window.Video)Video.g++;document.querySelectorAll('.sheet').forEach(x=>x.remove());
- const tab={'':'home',escuela:'escuela',c:h[1]==='escuela'?'escuela':'aviones',l:h[1]==='escuela'?'escuela':'aviones',q:'aviones',x:'aviones',p:'aviones',aviones:'aviones',herramientas:'herramientas',t:'herramientas',videos:'herramientas',v:'herramientas'}[h[0]]||'home';
+ const tab={'':'home',escuela:'escuela',c:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',l:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',sim:'escuela',q:'aviones',x:'aviones',p:'aviones',aviones:'aviones',herramientas:'herramientas',t:'herramientas',videos:'herramientas',v:'herramientas'}[h[0]]||'home';
  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.t===tab));
  $('#bBack').style.visibility=h[0]?'visible':'hidden';
  switch(h[0]){case'':V.home();break;case'escuela':V.escuela();break;case'aviones':V.aviones();break;case'herramientas':V.herramientas();break;
- case'c':V.course(h[1]);break;case'l':V.lesson(h[1],h[2],h[3]);break;case'q':V.quiz(h[1],h[2]);break;case'x':V.exam(h[1]);break;case'p':V.panel(h[1]);break;case't':V.tool(h[1]);break;case'videos':Video.list(app);break;case'v':Video.play(h[1],app);break;default:V.home();}}
+ case'c':V.course(h[1]);break;case'l':V.lesson(h[1],h[2],h[3]);break;case'q':V.quiz(h[1],h[2]);break;case'x':V.exam(h[1]);break;case'p':V.panel(h[1]);break;case't':V.tool(h[1]);break;case'videos':Video.list(app);break;case'sim':MC.free(app,h[1]);break;case'v':Video.play(h[1],app);break;default:V.home();}}
 $('#bBack').onclick=()=>history.length>1?history.back():location.hash='#/';
 /* ---------- Ajustes: voz, sonido, profesor ---------- */
 const UI={sync(){const s=SET.get();$('#hVoice').classList.toggle('off',!s.voice);$('#hSnd').classList.toggle('off',!s.sound);$('#hVoice').textContent=s.voice?'🗣️':'🤐';$('#hSnd').textContent=s.sound?'🔊':'🔇';},
@@ -115,7 +115,7 @@ $('#hVoice').onclick=()=>{const v=!SET.get().voice;SET.set('voice',v);v?Voice.sa
 $('#hSnd').onclick=()=>{const v=!SET.get().sound;SET.set('sound',v);if(!v)Snd.stopAll();else{Snd.init();Snd.click(true);}UI.sync();toast(v?'🔊 Sonidos activados':'🔇 Sonidos desactivados');};
 $('#hCfg').onclick=()=>UI.sheet();UI.sync();
 /* ---------- Modo profesor ---------- */
-const Prof={order:['escuela','a320','b787','b737','a350','b777'],
+const Prof={order:['escuela','mcdu','a320','b787','b737','a350','b777'],
  next(){const p=ST.get();const ids=[...this.order,...PP.courses.map(c=>c.id).filter(x=>!this.order.includes(x))];
   for(const id of ids){const c=C(id);if(!c)continue;
    for(const m of c.modules){for(const l of m.lessons){if(!p.l[`${c.id}/${m.id}/${l.id}`])return{href:`#/l/${c.id}/${m.id}/${l.id}`,txt:`Lee la lección <b>“${l.title}”</b> (${c.title} · ${m.title}).`,say:`Ahora te toca leer la lección ${l.title}, del curso ${c.title}.`};}

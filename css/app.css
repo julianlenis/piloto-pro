@@ -123,3 +123,36 @@ label{font-size:13px;color:var(--mu);display:block;margin:10px 0 4px}
 .zbar span{flex:1;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .zbar button{background:var(--card2);color:var(--tx);border:1px solid var(--line);border-radius:10px;width:42px;height:38px;font-size:20px}
 .zsc{flex:1;overflow:auto;display:flex;align-items:center;-webkit-overflow-scrolling:touch}.zin{width:100%;margin:auto;flex:none}.zin svg{width:100%;height:auto;display:block}
+/* MCDU / CDU */
+.mcd{--lh:clamp(15px,4.4vw,19px);background:#4b5563;border-radius:14px;padding:10px 6px;margin:10px auto;max-width:440px;box-shadow:0 4px 18px #0008;user-select:none;-webkit-user-select:none}
+.mcd.b{background:#5b6573}
+.mgrid{display:grid;grid-template-columns:30px 1fr 30px;grid-template-rows:repeat(14,var(--lh));column-gap:4px;position:relative}
+.mbg{grid-column:2;grid-row:1/15;background:#000;border-radius:4px;border:2px solid #1f2937}
+.mt,.ml{grid-column:2;z-index:1;font:600 calc(var(--lh)*.78)/var(--lh) "Courier New",ui-monospace,monospace;color:#fff;padding:0 6px;white-space:nowrap;overflow:hidden}
+.mt{text-align:center}.marr{float:right;color:#fff;opacity:.7}
+.ml{display:flex;justify-content:space-between;gap:6px}.ml.s{font-size:calc(var(--lh)*.6);color:#e5e7eb}
+.ml.spd{border-top:1px dashed #374151}
+.ml .g{color:#22c55e}.ml .c{color:#22d3ee}.ml .a{color:#f59e0b}.ml .w{color:#fff}.ml .y{color:#facc15}.ml .m{color:#e879f9}.ml .s{font-size:.75em}
+.lsk{grid-column:1;width:30px;padding:0;border:1px solid #111;border-radius:4px;background:#d1d5db;color:#374151;font-size:10px;margin:3px 0;cursor:pointer}.lsk.r{grid-column:3}
+.mfk{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:10px}
+.mk{background:#111827;color:#fff;border:1px solid #000;border-radius:5px;font:600 11px/1.1 system-ui,sans-serif;min-height:32px;padding:2px;cursor:pointer}
+.mk.f{font-size:9.5px}.mk.dis{opacity:.45}.mk.clr{background:#374151}
+.mk.ex{background:#e5e7eb;color:#000;position:relative}.mk.ex.on::before{content:'';position:absolute;left:20%;right:20%;top:2px;height:4px;background:#facc15;border-radius:2px;box-shadow:0 0 6px #facc15}
+.mkb{display:grid;grid-template-columns:3fr 6fr;gap:8px;margin-top:8px}
+.mnum{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;align-content:start}.mabc{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.mcd .hl{animation:hlb .8s infinite;outline:3px solid #facc15;outline-offset:1px;position:relative;z-index:2}
+@keyframes hlb{50%{background:#facc15;color:#000}}
+.mcd button:active{transform:translateY(1px);filter:brightness(1.3)}
+.pst{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin:8px 0}.pst.okb{border-color:var(--ok)}
+.ptx{margin:6px 0;font-size:16px}.pnote{margin:4px 0;color:#fbbf24;font-size:14px}.btn.sm{padding:6px 10px;font-size:13px}
+.ideas{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 14px;min-height:150px}.ideas .idea h3{margin-top:10px}
+.inav{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:8px 0 14px}.inav .dots{display:flex;gap:5px}.inav .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)}.inav .dots i.on{background:var(--ac)}
+.inav .btn{padding:8px 10px;font-size:14px}
+.box.ok{border-color:#22c55e66;background:#22c55e14}.resu ul{margin:6px 0;padding-left:20px}
+.cg{color:#22c55e}.cc{color:#22d3ee}.ca{color:#f59e0b}.cy{color:#facc15}
+abbr.gl{text-decoration:underline dotted #38bdf8 2px;text-underline-offset:3px;cursor:help}
+.gpop{position:absolute;z-index:120;max-width:300px;background:#0f1d36;border:1px solid var(--ac);border-radius:12px;padding:10px 30px 10px 12px;font-size:14px;box-shadow:0 6px 20px #000a}
+.gpop button{position:absolute;top:4px;right:4px;background:none;border:0;color:var(--tx);font-size:16px}
+table.gl{width:100%;border-collapse:collapse;font-size:14px}table.gl td,table.gl th{border-bottom:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}
+.mq{margin-bottom:10px}
+.box.easy{border-color:#38bdf866;background:#38bdf814;font-size:17px}
