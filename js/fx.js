@@ -2,7 +2,7 @@
 const SET={d:{voice:true,sound:true,vol:0.7,teacher:true},get(){try{return Object.assign({},this.d,JSON.parse(localStorage.getItem('pp_set')||'{}'))}catch(e){return{...this.d}}},set(k,v){const s=this.get();s[k]=v;localStorage.setItem('pp_set',JSON.stringify(s));}};
 const Voice={v:null,
   pick(){const vs=speechSynthesis.getVoices();this.v=vs.find(x=>x.lang==='es-ES')||vs.find(x=>/^es/i.test(x.lang))||null;},
-  clean(h){const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('svg,table,pre,.btn').forEach(x=>x.remove());let t=d.textContent||'';
+  clean(h){const d=document.createElement('div');d.innerHTML=h;d.querySelectorAll('.fig').forEach(f=>{const b=f.querySelector('figcaption b');f.replaceWith(' Mira la imagen: '+(b?b.textContent.replace(/[^\p{L}\p{N}\s()\/,:-]/gu,'').trim():'')+'. ');});d.querySelectorAll('svg,table,pre,.btn').forEach(x=>x.remove());let t=d.textContent||'';
     return t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').replace(/\bFL\s?(\d{2,3})/g,'nivel de vuelo $1').replace(/(\d)\s?kt\b/g,'$1 nudos').replace(/(\d)\s?ft\b/g,'$1 pies').replace(/→/g,', ').replace(/\s+/g,' ').trim();},
   say(h,onend){this.stop();if(!SET.get().voice||!('speechSynthesis' in window)){if(onend)onend(false);return;}if(!this.v)this.pick();
     const parts=this.clean(h).match(/[^.!?;:]+[.!?;:]?/g)||[];if(!parts.length){onend&&onend(true);return;}
