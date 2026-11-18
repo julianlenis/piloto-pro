@@ -38,6 +38,7 @@ home(){const p=ST.get();const last=localStorage.getItem('pp_last');
  <h2>🎓 Tu ruta de aprendizaje</h2><div class="list">
  ${[['escuela','1','Escuela de vuelo: fundamentos, radio, meteo, cartas, plan de vuelo'],['mcdu','2','MCDU / FMC: programa el ordenador de vuelo con un simulador de teclas'],['a320','3','Airbus A320 completo + panel'],['b787','4','Boeing 787 completo + panel'],['b737','5','Boeing 737 completo + panel'],['a350','6','Airbus A350 completo + panel'],['b777','7','Boeing 777 completo + panel']].map(([id,n,t])=>{const c=C(id),pc=courseProg(c);return `<a class="row" href="#/c/${id}"><span class="n ${pc===100?'done':''}">${pc===100?'✓':n}</span><div><b>${c.title}</b><small>${t}</small><div class="bar"><i style="width:${pc}%"></i></div></div><span class="go">›</span></a>`;}).join('')}</div>
  <h2>🎬 Vídeo-lecciones</h2><div class="grid">${VIDS.slice(0,4).map(v=>`<a class="card" href="#/v/${v.id}"><div class="ic">${v.ic}</div><b>${v.t}</b><small>Animación narrada</small></a>`).join('')}</div><p><a href="#/videos">Ver todas ›</a></p>
+ <h2>🛫 Cabina completa para clases</h2><div class="grid">${Object.entries(CAB.TYPES).map(([k,v])=>`<a class="card" href="#/cab/${k}"><div class="ic">🛫</div><b>${v.n}</b><small>Toca cada panel · clase guiada</small></a>`).join('')}</div>
  <h2>🎛️ Paneles de cabina interactivos</h2><div class="grid">${Object.keys(PP.panels).map(k=>`<a class="card" href="#/p/${k}"><div class="ic">🎛️</div><b>${PP.panels[k].name}</b><small>Preparación desde cold & dark y vuelo completo hasta el apagado</small></a>`).join('')}</div>
  <h2>🧰 Herramientas rápidas</h2>${V.toolsGrid()}
  <div class="foot">Piloto Pro by Julián Lenis · Para estudio en simulador. No es formación aeronáutica oficial.</div>`;
@@ -45,6 +46,8 @@ home(){const p=ST.get();const last=localStorage.getItem('pp_last');
  const b=$('#inst');if(window._dp){b.style.display='';b.onclick=()=>{window._dp.prompt();};}
 },
 toolsGrid(){return `<div class="grid">
+ <a class="card" href="#/cab"><div class="ic">🛫</div><b>Cabina completa</b><small>Toca cada panel y clase guiada</small></a>
+ <a class="card" href="#/sim/a"><div class="ic">🖥️</div><b>Simulador MCDU/CDU</b><small>Modo libre Airbus y Boeing</small></a>
  <a class="card" href="#/videos"><div class="ic">🎬</div><b>Vídeo-lecciones</b><small>Animaciones narradas + YouTube</small></a>
  <a class="card" href="#/t/alfabeto"><div class="ic">🔤</div><b>Alfabeto aeronáutico</b><small>Tabla, juego y deletreador</small></a>
  <a class="card" href="#/t/metar"><div class="ic">🌦️</div><b>METAR / TAF</b><small>Decodificador interactivo y ejercicios</small></a>
@@ -91,11 +94,11 @@ panel(id){const P=PP.panels[id];if(!P)return V.home();localStorage.setItem('pp_l
 tool(t){const r=app;if(QZ[t]){const z=QZ[t];Quiz.run(r,Tools[z[0]](),{title:z[1],back:z[2]});}else if(t==='alfabeto')Tools.alfa(r);else if(typeof Tools[t]==='function'&&!/Qs$/.test(t))Tools[t](r);else V.home();}
 };
 function route(){const h=location.hash.replace(/^#\/?/,'').split('/');scrollTo(0,0);Voice.stop();Snd.stopAll();if(window.Video)Video.g++;document.querySelectorAll('.sheet').forEach(x=>x.remove());
- const tab={'':'home',escuela:'escuela',c:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',l:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',sim:'escuela',q:'aviones',x:'aviones',p:'aviones',aviones:'aviones',herramientas:'herramientas',t:'herramientas',videos:'herramientas',v:'herramientas'}[h[0]]||'home';
+ const tab={'':'home',escuela:'escuela',c:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',l:/^(escuela|mcdu)$/.test(h[1])?'escuela':'aviones',sim:'escuela',cab:'aviones',q:'aviones',x:'aviones',p:'aviones',aviones:'aviones',herramientas:'herramientas',t:'herramientas',videos:'herramientas',v:'herramientas'}[h[0]]||'home';
  document.querySelectorAll('#tabs a').forEach(a=>a.classList.toggle('on',a.dataset.t===tab));
  $('#bBack').style.visibility=h[0]?'visible':'hidden';
  switch(h[0]){case'':V.home();break;case'escuela':V.escuela();break;case'aviones':V.aviones();break;case'herramientas':V.herramientas();break;
- case'c':V.course(h[1]);break;case'l':V.lesson(h[1],h[2],h[3]);break;case'q':V.quiz(h[1],h[2]);break;case'x':V.exam(h[1]);break;case'p':V.panel(h[1]);break;case't':V.tool(h[1]);break;case'videos':Video.list(app);break;case'sim':MC.free(app,h[1]);break;case'v':Video.play(h[1],app);break;default:V.home();}}
+ case'c':V.course(h[1]);break;case'l':V.lesson(h[1],h[2],h[3]);break;case'q':V.quiz(h[1],h[2]);break;case'x':V.exam(h[1]);break;case'p':V.panel(h[1]);break;case't':V.tool(h[1]);break;case'videos':Video.list(app);break;case'sim':MC.free(app,h[1]);break;case'cab':h[1]?CAB.view(app,h[1]):CAB.list(app);break;case'v':Video.play(h[1],app);break;default:V.home();}}
 $('#bBack').onclick=()=>history.length>1?history.back():location.hash='#/';
 /* ---------- Ajustes: voz, sonido, profesor ---------- */
 const UI={sync(){const s=SET.get();$('#hVoice').classList.toggle('off',!s.voice);$('#hSnd').classList.toggle('off',!s.sound);$('#hVoice').textContent=s.voice?'🗣️':'🤐';$('#hSnd').textContent=s.sound?'🔊':'🔇';},
